@@ -27,13 +27,11 @@ interface User {
 interface NationalityStats {
   nationality: string;
   count: number;
-  percentage: number;
 }
 
 interface GenderStats {
   gender: string;
   count: number;
-  percentage: number;
 }
 
 interface ActivityStats {
@@ -80,8 +78,6 @@ export class HomeComponent implements OnInit{
   selectedExercise: Exercise | null = null;
   expandedLevel: number | null = null;
 
-
-
   // Add these new properties to your existing component properties
   @ViewChild('activityChart', { static: false }) activityChart!: ElementRef<HTMLCanvasElement>;
   @ViewChild('nationalityModal', { static: false }) nationalityModal!: ElementRef<HTMLDivElement>;
@@ -114,14 +110,13 @@ export class HomeComponent implements OnInit{
     this.loadAllAnalytics();
   }
 
-
-// Add this method to initialize the activity chart
-ngAfterViewInit() {
-  // Initialize chart after view is ready
-  setTimeout(() => {
-    this.initializeActivityChart();
-  }, 100);
-}
+  // Add this method to initialize the activity chart
+  ngAfterViewInit() {
+    // Initialize chart after view is ready
+    setTimeout(() => {
+      this.initializeActivityChart();
+    }, 100);
+  }
 
   initializeActivityChart() {
     if (this.activityChart) {
@@ -172,8 +167,7 @@ ngAfterViewInit() {
             tooltip: {
               callbacks: {
                 label: (context: any) => {
-                  const percentage = this.getActivityPercentage(context.parsed);
-                  return `${context.label}: ${context.parsed} (${percentage}%)`;
+                  return `${context.label}: ${context.parsed} users`;
                 }
               }
             }
@@ -183,8 +177,6 @@ ngAfterViewInit() {
       });
     }
   }
-
-
 
   loadAllAnalytics() {
     this.analyticsService.getAllUsersWithActivity().subscribe({
@@ -202,7 +194,6 @@ ngAfterViewInit() {
       error: err => console.error('Error loading analytics data:', err)
     });
   }
-
 
   processActivityData(users: User[]) {
     const now = new Date();
@@ -266,7 +257,6 @@ ngAfterViewInit() {
     document.body.style.overflow = 'auto';
   }
 
-
   processNationalityData(users: User[]) {
     const nationalityCount = new Map<string, number>();
     const totalUsers = users.length;
@@ -280,8 +270,7 @@ ngAfterViewInit() {
     this.nationalityStats = Array.from(nationalityCount.entries())
       .map(([nationality, count]) => ({
         nationality,
-        count,
-        percentage: Math.round((count / totalUsers) * 100)
+        count
       }))
       .sort((a, b) => b.count - a.count);
 
@@ -291,12 +280,10 @@ ngAfterViewInit() {
       
       const remainingNationalities = this.nationalityStats.slice(2);
       const othersCount = remainingNationalities.reduce((total, stat) => total + stat.count, 0);
-      const othersPercentage = Math.round((othersCount / totalUsers) * 100);
       
       this.topNationalities.push({
         nationality: 'Others',
-        count: othersCount,
-        percentage: othersPercentage
+        count: othersCount
       });
     } else {
       this.topNationalities = this.nationalityStats;
@@ -315,8 +302,7 @@ ngAfterViewInit() {
     this.genderStats = Array.from(genderCount.entries())
       .map(([gender, count]) => ({
         gender,
-        count,
-        percentage: Math.round((count / totalUsers) * 100)
+        count
       }))
       .sort((a, b) => b.count - a.count);
   }
@@ -375,12 +361,6 @@ ngAfterViewInit() {
   // New method to toggle nationality details
   toggleNationalityDetails() {
     this.showNationalityDetails = !this.showNationalityDetails;
-  }
-
-  // New method to get activity percentage
-  getActivityPercentage(count: number): number {
-    return this.activityStats.totalUsers > 0 ? 
-      Math.round((count / this.activityStats.totalUsers) * 100) : 0;
   }
 
   selectExercise(exercise: Exercise) {

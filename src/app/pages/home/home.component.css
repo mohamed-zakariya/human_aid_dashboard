@@ -284,31 +284,6 @@
   color: #333;
 }
 
-.level-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.progress-bar {
-  width: 80px;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  transition: width 0.3s ease;
-}
-
-.progress-text {
-  font-size: 12px;
-  color: #666;
-  font-weight: 600;
-}
 
 /* Games List */
 .games-list {

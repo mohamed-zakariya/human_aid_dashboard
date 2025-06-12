@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <!-- Replace the User Activity Analytics Section in your existing HTML -->
+  <!-- User Activity Analytics Section -->
   <div class="analytics-section">
     <h2>User Activity Analytics</h2>
     
@@ -59,7 +59,7 @@
     
     <!-- Nationality and Gender Analytics -->
     <div class="analytics-container">
-      <!-- Update the Nationality Card section -->
+      <!-- Nationality Card section -->
       <div class="analytics-card nationality-card">
         <div class="analytics-header">
           <h3>Users by Nationality</h3>
@@ -82,14 +82,7 @@
                 <span class="nationality-name">{{ stat.nationality }}</span>
               </div>
               <div class="nationality-stats">
-                <span class="nationality-count">{{ stat.count }}</span>
-                <div class="nationality-bar">
-                  <div 
-                    class="nationality-fill" 
-                    [style.width.%]="stat.percentage">
-                  </div>
-                </div>
-                <span class="nationality-percentage">{{ stat.percentage }}%</span>
+                <span class="nationality-count">{{ stat.count }} users</span>
               </div>
             </div>
           </div>
@@ -119,8 +112,7 @@
                   <span class="nationality-name">{{ stat.nationality }}</span>
                 </div>
                 <div class="nationality-stats">
-                  <span class="nationality-count">{{ stat.count }}</span>
-                  <span class="nationality-percentage">{{ stat.percentage }}%</span>
+                  <span class="nationality-count">{{ stat.count }} users</span>
                 </div>
               </div>
             </div>
@@ -139,14 +131,11 @@
             <div 
               *ngFor="let stat of genderStats" 
               class="gender-item">
-              <div class="gender-circle" [style.--percentage]="stat.percentage">
+              <div class="gender-info">
                 <div class="gender-icon">{{ getGenderIcon(stat.gender) }}</div>
-                <div class="gender-percentage">{{ stat.percentage }}%</div>
-              </div>
-              <div class="gender-details">
                 <div class="gender-name">{{ stat.gender }}</div>
-                <div class="gender-count">{{ stat.count }} users</div>
               </div>
+              <div class="gender-count">{{ stat.count }} users</div>
             </div>
           </div>
         </div>
@@ -211,15 +200,7 @@
                 <span class="level-number">{{ level.level_number }}</span>
                 <span class="level-name">{{ level.name }}</span>
               </div>
-              <div class="level-progress">
-                <div class="progress-bar">
-                  <div 
-                    class="progress-fill" 
-                    [style.width.%]="getLevelProgress(level)">
-                  </div>
-                </div>
-                <span class="progress-text">{{ getLevelProgress(level) }}%</span>
-              </div>
+
             </div>
             
             <!-- Games List -->

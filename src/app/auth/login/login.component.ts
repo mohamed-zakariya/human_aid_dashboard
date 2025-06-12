@@ -1,25 +1,35 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth/auth.service';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  providers: [AuthService],  // Provide HttpClient here if not globally
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  username = '';
-  password = '';
-  error: string | null = null;
+  username: string = '';
+  password: string = '';
+  rememberMe: boolean = false;
+  error: string = '';
+  isLoading: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
-  onLogin() {
+  onLogin(): void {
+    this.error = '';
+
+    if (!this.username.trim() || !this.password.trim()) {
+      this.error = 'Please enter both username and password';
+      return;
+    }
+
+    this.isLoading = true;
+
     this.authService.login(this.username, this.password).subscribe({
       next: (user) => {
         this.router.navigate(['/dashboard']);
@@ -29,5 +39,16 @@ export class LoginComponent {
         console.error(err);
       }
     });
+  }
+
+  onInputChange(): void {
+    if (this.error) {
+      this.error = '';
+    }
+  }
+
+  onForgotPassword(): void {
+    console.log('Forgot password clicked');
+    // this.router.navigate(['/forgot-password']);
   }
 }

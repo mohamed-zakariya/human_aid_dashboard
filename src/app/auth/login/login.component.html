@@ -1,29 +1,86 @@
-<div class="login-page">
-  <div class="logo-panel">
-    <img src="lexfix.png" alt="LexFix Logo" class="logo" />
-    <!-- <h1 class="brand">LexFix</h1> -->
+<div class="login-container">
+  <div class="logo-section">
+    <div class="logo">
+      <!-- Replace with your actual logo -->
+      <img src="assets/images/lexfix-logo.png" alt="LexFix" class="logo-img" *ngIf="false">
+      <span class="logo-text">LF</span>
+    </div>
+    <h1 class="welcome-text">Welcome back</h1>
+    <p class="subtitle">Please sign in to your account</p>
   </div>
 
-  <div class="login-box">
-    <p class="subtitle">Please enter your details</p>
-    <h2>Welcome back</h2>
+  <form (ngSubmit)="onLogin()" #loginForm="ngForm" novalidate>
+    <div class="form-group">
+      <label class="form-label" for="username">Username</label>
+      <input 
+        type="text" 
+        id="username" 
+        name="username" 
+        class="form-input" 
+        [class.error]="error"
+        placeholder="Enter your username"
+        [(ngModel)]="username"
+        (input)="onInputChange()"
+        required
+        autocomplete="username"
+      >
+    </div>
 
-    <form (ngSubmit)="onLogin()">
-        <input type="text" placeholder="Username" [(ngModel)]="username" name="username" required />
-        <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        class="form-input" 
+        [class.error]="error"
+        placeholder="Enter your password"
+        [(ngModel)]="password"
+        (input)="onInputChange()"
+        required
+        autocomplete="current-password"
+      >
+    </div>
 
-        <div class="options">
-            <label><input type="checkbox" /> Remember for 30 days</label>
-            <a href="#">Forgot password</a>
+    <div class="form-options">
+      <div class="checkbox-wrapper">
+        <div class="checkbox">
+          <input 
+            type="checkbox" 
+            id="remember" 
+            [(ngModel)]="rememberMe"
+            name="rememberMe"
+          >
+          <span class="checkmark"></span>
         </div>
+        <label class="checkbox-label" for="remember">Remember me</label>
+      </div>
+      <a href="#" class="forgot-link" (click)="onForgotPassword(); $event.preventDefault()">
+        Forgot password?
+      </a>
+    </div>
 
-        <button type="submit" class="primary-btn">Sign in</button>
-    </form>
+    <div class="error-message" *ngIf="error">
+      <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <span>{{ error }}</span>
+    </div>
 
-    <p *ngIf="error" class="error">{{ error }}</p>
-
-
-    <!-- <p class="signup-link">Don't have an account? <a href="#">Sign up</a></p> -->
-  </div>
+    <button 
+      type="submit" 
+      class="login-btn"
+      [disabled]="isLoading || !username.trim() || !password.trim()"
+      [class.loading]="isLoading"
+    >
+      <span *ngIf="!isLoading">Sign In</span>
+      <span *ngIf="isLoading" class="loading-content">
+        <svg class="loading-spinner" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
+          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" opacity="0.75"/>
+        </svg>
+        Signing in...
+      </span>
+    </button>
+  </form>
 </div>
-
