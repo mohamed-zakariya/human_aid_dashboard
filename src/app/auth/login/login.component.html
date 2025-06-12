@@ -1,0 +1,29 @@
+<div class="login-page">
+  <div class="logo-panel">
+    <img src="lexfix.png" alt="LexFix Logo" class="logo" />
+    <!-- <h1 class="brand">LexFix</h1> -->
+  </div>
+
+  <div class="login-box">
+    <p class="subtitle">Please enter your details</p>
+    <h2>Welcome back</h2>
+
+    <form (ngSubmit)="onLogin()">
+        <input type="text" placeholder="Username" [(ngModel)]="username" name="username" required />
+        <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
+
+        <div class="options">
+            <label><input type="checkbox" /> Remember for 30 days</label>
+            <a href="#">Forgot password</a>
+        </div>
+
+        <button type="submit" class="primary-btn">Sign in</button>
+    </form>
+
+    <p *ngIf="error" class="error">{{ error }}</p>
+
+
+    <!-- <p class="signup-link">Don't have an account? <a href="#">Sign up</a></p> -->
+  </div>
+</div>
+

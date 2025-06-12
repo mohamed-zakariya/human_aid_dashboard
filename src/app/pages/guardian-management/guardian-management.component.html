@@ -1,0 +1,194 @@
+<div class="guardian-management">
+  <div class="header">
+    <h1>Guardians Management</h1>
+    <button class="add-btn" (click)="addGuardian()">
+      <i class="icon-plus"></i>
+      Add Guardian
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">
+    <div class="error-icon">⚠️</div>
+    <div class="error-text">
+      <h3>Error</h3>
+      <p>{{error}}</p>
+      <button class="retry-btn" (click)="loadGuardians()">Try Again</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading guardians...</p>
+  </div>
+
+  <div class="filters-section" *ngIf="!loading && !error">
+    <div class="filters-grid">
+      <!-- Search by Name -->
+      <div class="filter-group">
+        <label>Search by Name</label>
+        <input 
+          type="text" 
+          [(ngModel)]="searchName" 
+          (input)="applyFilters()"
+          placeholder="Enter guardian name..."
+          class="search-input">
+      </div>
+
+      <!-- Gender Filter -->
+      <div class="filter-group">
+        <label>Gender</label>
+        <select [(ngModel)]="selectedGender" (change)="applyFilters()" class="filter-select">
+          <option *ngFor="let gender of genderOptions" [value]="gender">{{gender}}</option>
+        </select>
+      </div>
+
+      <!-- Nationality Filter -->
+      <div class="filter-group">
+        <label>Nationality</label>
+        <select [(ngModel)]="selectedNationality" (change)="applyFilters()" class="filter-select">
+          <option *ngFor="let nationality of nationalityOptions" [value]="nationality">{{nationality}}</option>
+        </select>
+      </div>
+
+      <!-- Children Count Range -->
+      <div class="filter-group children-range">
+        <label>Children Count</label>
+        <div class="range-inputs">
+          <input 
+            type="number" 
+            [(ngModel)]="minChildren" 
+            (input)="applyFilters()"
+            placeholder="Min"
+            min="0"
+            class="range-input">
+          <span>to</span>
+          <input 
+            type="number" 
+            [(ngModel)]="maxChildren" 
+            (input)="applyFilters()"
+            placeholder="Max"
+            min="0"
+            max="20"
+            class="range-input">
+        </div>
+      </div>
+
+      <!-- Last Active Filter -->
+      <div class="filter-group">
+        <label>Last Active</label>
+        <select [(ngModel)]="selectedLastActive" (change)="applyFilters()" class="filter-select">
+          <option *ngFor="let option of lastActiveOptions" [value]="option">{{option}}</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="clear-filters-btn" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Results Summary -->
+  <div class="results-summary">
+    Showing {{displayedRange}} guardians (Page {{currentPage}} of {{totalPages}})
+  </div>
+
+  <!-- Guardians Table -->
+  <div class="table-container" *ngIf="!loading && !error && filteredGuardians.length > 0">
+    <table class="guardians-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Gender</th>
+          <th>Age</th>
+          <th>Nationality</th>
+          <th>Phone</th>
+          <th>Linked Children</th>
+          <th>Last Active</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let guardian of paginatedGuardians" class="guardian-row">
+          <td class="name-cell">
+            <div class="name-container">
+              <div class="avatar">{{getInitials(guardian.name)}}</div>
+              <div class="name-info">
+                <div class="name">{{guardian.name}}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{guardian.email}}</td>
+          <td>{{guardian.gender}}</td>
+          <td>{{calculateAge(guardian.birthdate)}} years</td>
+          <td>{{guardian.nationality}}</td>
+          <td>{{guardian.phoneNumber}}</td>
+          <td class="children-cell">
+            <div class="children-container">
+              <div class="children-count">{{guardian.linkedChildren.length}} children</div>
+              <div class="children-list">
+                <div 
+                  *ngFor="let child of guardian.linkedChildren; let i = index" 
+                  class="child-tag"
+                  [class.show-more]="i >= 3"
+                  [style.display]="i >= 3 ? 'none' : 'inline-block'">
+                  {{child.username}}
+                </div>
+                <button 
+                  *ngIf="guardian.linkedChildren.length > 3" 
+                  class="show-more-btn"
+                  (click)="toggleChildrenView($event)">
+                  +{{guardian.linkedChildren.length - 3}} more
+                </button>
+              </div>
+            </div>
+          </td>
+          <td class="last-active">{{guardian.lastActive}}</td>
+          <td class="actions-cell">
+            <button class="action-btn edit-btn" (click)="editGuardian(guardian)" title="Edit">
+              <i class="icon-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteGuardian(guardian)" title="Delete">
+              <i class="icon-delete"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!loading && !error && filteredGuardians.length === 0" class="no-results">
+    <div class="no-results-icon">👥</div>
+    <h3>No guardians found</h3>
+    <p>Try adjusting your filters or search terms</p>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && !error && totalPages > 1" class="pagination">
+    <button 
+      class="page-btn" 
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)">
+      Previous
+    </button>
+    
+    <div class="page-numbers">
+      <button 
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        class="page-btn"
+        [class.active]="currentPage === i + 1"
+        (click)="changePage(i + 1)">
+        {{i + 1}}
+      </button>
+    </div>
+    
+    <button 
+      class="page-btn" 
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)">
+      Next
+    </button>
+  </div>
+  <app-toast></app-toast>
+</div>

@@ -1,0 +1,240 @@
+<div class="home-container">
+  <!-- Welcome Section -->
+  <div class="welcome-card">
+    <h2>Welcome to LexFix Dashboard</h2>
+    <p>This is your main dashboard where you can manage all System activities.</p>
+
+    <!-- User Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card adults">
+        <div class="stat-icon">👨‍🎓</div>
+        <h3>{{ numAdults }}</h3>
+        <p>Learners – Adults</p>
+      </div>
+      <div class="stat-card guardians">
+        <div class="stat-icon">👨‍👩‍👧‍👦</div>
+        <h3>{{ Guardians }}</h3>
+        <p>Guardians</p>
+      </div>
+      <div class="stat-card children">
+        <div class="stat-icon">👶</div>
+        <h3>{{ numChildren }}</h3>
+        <p>Learners – Children</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Replace the User Activity Analytics Section in your existing HTML -->
+  <div class="analytics-section">
+    <h2>User Activity Analytics</h2>
+    
+    <div class="analytics-container activity-container">
+      <div class="analytics-card activity-card">
+        <div class="analytics-header">
+          <h3>User Activity Overview</h3>
+          <span class="analytics-icon">📊</span>
+        </div>
+        <div class="analytics-content">
+          <div class="chart-container">
+            <canvas #activityChart width="400" height="300"></canvas>
+          </div>
+          <div class="activity-summary">
+            <div class="summary-item">
+              <span class="summary-label">Total Users:</span>
+              <span class="summary-value">{{ activityStats.totalUsers }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Most Active Period:</span>
+              <span class="summary-value">This Month ({{ activityStats.thisMonth }} users)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Section -->
+  <div class="analytics-section">
+    <h2>User Demographics</h2>
+    
+    <!-- Nationality and Gender Analytics -->
+    <div class="analytics-container">
+      <!-- Update the Nationality Card section -->
+      <div class="analytics-card nationality-card">
+        <div class="analytics-header">
+          <h3>Users by Nationality</h3>
+          <div class="nationality-controls">
+            <button 
+              class="details-toggle-btn" 
+              (click)="openNationalityModal()">
+              View All
+            </button>
+            <span class="analytics-icon">🌍</span>
+          </div>
+        </div>
+        <div class="analytics-content">
+          <div class="nationality-list">
+            <div 
+              *ngFor="let stat of topNationalities" 
+              class="nationality-item">
+              <div class="nationality-info">
+                <span class="nationality-flag">{{ getNationalityIcon(stat.nationality) }}</span>
+                <span class="nationality-name">{{ stat.nationality }}</span>
+              </div>
+              <div class="nationality-stats">
+                <span class="nationality-count">{{ stat.count }}</span>
+                <div class="nationality-bar">
+                  <div 
+                    class="nationality-fill" 
+                    [style.width.%]="stat.percentage">
+                  </div>
+                </div>
+                <span class="nationality-percentage">{{ stat.percentage }}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="total-countries">
+            <small>{{ nationalityStats.length }} countries represented</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nationality Modal -->
+      <div 
+        class="nationality-modal-overlay" 
+        [class.show]="showNationalityModal"
+        (click)="closeNationalityModal()">
+        <div class="nationality-modal" (click)="$event.stopPropagation()" #nationalityModal>
+          <div class="modal-header">
+            <h3>All Nationalities</h3>
+            <button class="close-btn" (click)="closeNationalityModal()">×</button>
+          </div>
+          <div class="modal-content">
+            <div class="nationality-grid">
+              <div 
+                *ngFor="let stat of nationalityStats" 
+                class="nationality-modal-item">
+                <div class="nationality-info">
+                  <span class="nationality-flag">{{ getNationalityIcon(stat.nationality) }}</span>
+                  <span class="nationality-name">{{ stat.nationality }}</span>
+                </div>
+                <div class="nationality-stats">
+                  <span class="nationality-count">{{ stat.count }}</span>
+                  <span class="nationality-percentage">{{ stat.percentage }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gender Analytics -->
+      <div class="analytics-card gender-card">
+        <div class="analytics-header">
+          <h3>Users by Gender</h3>
+          <span class="analytics-icon">👥</span>
+        </div>
+        <div class="analytics-content">
+          <div class="gender-distribution">
+            <div 
+              *ngFor="let stat of genderStats" 
+              class="gender-item">
+              <div class="gender-circle" [style.--percentage]="stat.percentage">
+                <div class="gender-icon">{{ getGenderIcon(stat.gender) }}</div>
+                <div class="gender-percentage">{{ stat.percentage }}%</div>
+              </div>
+              <div class="gender-details">
+                <div class="gender-name">{{ stat.gender }}</div>
+                <div class="gender-count">{{ stat.count }} users</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Overview -->
+  <div class="system-overview">
+    <div class="overview-stats">
+      <div class="overview-card">
+        <h3>{{ exercises.length }}</h3>
+        <p>Exercise Types</p>
+        <div class="card-icon">🎯</div>
+      </div>
+      <div class="overview-card">
+        <h3>{{ getTotalLevels() }}</h3>
+        <p>Total Levels</p>
+        <div class="card-icon">📊</div>
+      </div>
+      <div class="overview-card">
+        <h3>{{ getTotalGames() }}</h3>
+        <p>Available Games</p>
+        <div class="card-icon">🎮</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise Navigation -->
+  <div class="exercises-section">
+    <h2>Learning Exercises</h2>
+    <div class="exercises-grid">
+      <div 
+        *ngFor="let exercise of exercises" 
+        class="exercise-card"
+        [class.selected]="selectedExercise === exercise"
+        (click)="selectExercise(exercise)">
+        
+        <div class="exercise-header">
+          <span class="exercise-icon">{{ getExerciseIcon(exercise.name) }}</span>
+          <h3>{{ exercise.name }}</h3>
+          <span class="level-count">{{ exercise.levels.length }} Levels</span>
+        </div>
+        
+        <div class="exercise-stats">
+          <div class="stat">
+            <span class="stat-number">{{ getGameCount(exercise) }}</span>
+            <span class="stat-label">Games</span>
+          </div>
+        </div>
+        
+        <!-- Expanded Level Details -->
+        <div *ngIf="selectedExercise === exercise" class="levels-container">
+          <div 
+            *ngFor="let level of exercise.levels" 
+            class="level-card"
+            [class.expanded]="expandedLevel === level.level_number"
+            (click)="toggleLevel(level.level_number); $event.stopPropagation()">
+            
+            <div class="level-header">
+              <div class="level-info">
+                <span class="level-number">{{ level.level_number }}</span>
+                <span class="level-name">{{ level.name }}</span>
+              </div>
+              <div class="level-progress">
+                <div class="progress-bar">
+                  <div 
+                    class="progress-fill" 
+                    [style.width.%]="getLevelProgress(level)">
+                  </div>
+                </div>
+                <span class="progress-text">{{ getLevelProgress(level) }}%</span>
+              </div>
+            </div>
+            
+            <!-- Games List -->
+            <div *ngIf="expandedLevel === level.level_number" class="games-list">
+              <div 
+                *ngFor="let game of level.games; let i = index" 
+                class="game-item">
+                <span class="game-icon">🎲</span>
+                <span class="game-name">{{ game.name }}</span>
+                <span class="game-status">Available</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

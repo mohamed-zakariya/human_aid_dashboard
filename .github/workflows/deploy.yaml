@@ -1,0 +1,31 @@
+name: Build and Deploy Angular App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - mohamed-zakariya/Main  # your actual main working branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build Angular app
+        run: npm run build -- --base-href=/human_aid_dashboard/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages  # target branch for GitHub Pages
+          folder: dist/human_aid_dashboard  # update if your dist folder is named differently

@@ -1,0 +1,96 @@
+.login-page {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f6fa;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-panel {
+  position: absolute;
+  top: 20px;
+  left: 100px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 150px;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+  width: 360px;
+}
+
+.subtitle {
+  color: #a0aec0;
+  font-size: 14px;
+}
+
+h2 {
+  margin: 10px 0 30px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.signup-link {
+  font-size: 13px;
+  text-align: center;
+  margin-top: 16px;
+}
