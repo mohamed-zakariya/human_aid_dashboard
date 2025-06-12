@@ -3,7 +3,7 @@ name: Build and Deploy Angular App to GitHub Pages
 on:
   push:
     branches:
-      - mohamed-zakariya/Main  # your actual main working branch
+      - mohamed-zakariya/Main
 
 jobs:
   build-and-deploy:
@@ -27,5 +27,5 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages  # target branch for GitHub Pages
-          folder: dist/human_aid_dashboard  # update if your dist folder is named differently
+          branch: gh-pages
+          folder: dist/human_aid_dashboard/browser
