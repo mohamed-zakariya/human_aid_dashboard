@@ -5,17 +5,14 @@ import { APOLLO_OPTIONS } from 'apollo-angular';
 import { provideHttpClient } from '@angular/common/http';
 import { createUploadLink } from 'apollo-upload-client';
 import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
+import { Router } from '@angular/router';
 
-// https://human-aid-deployment.onrender.com/graphql
-// http://10.0.2.2:5500/graphql
-
-export function createApollo() {
-  // Create upload link to GraphQL server
+export function createApollo(router: Router) {
   const uploadLink = createUploadLink({
     uri: 'https://human-aid-deployment.onrender.com/graphql',
   });
 
-  // Middleware to add Authorization header with token
   const authLink = setContext(() => {
     const token = localStorage.getItem('token');
     return {
@@ -25,8 +22,23 @@ export function createApollo() {
     };
   });
 
-  // Combine authLink and uploadLink
-  const link = ApolloLink.from([authLink, uploadLink]);
+  const errorLink = onError(({ graphQLErrors, networkError }) => {
+    if (graphQLErrors) {
+      for (const err of graphQLErrors) {
+        if (err.extensions?.['code'] === 'UNAUTHENTICATED') {
+          localStorage.removeItem('token');
+          router.navigate(['/login']);
+        }
+      }
+    }
+
+    if (networkError && (networkError as any).status === 401) {
+      localStorage.removeItem('token');
+      router.navigate(['/login']);
+    }
+  });
+
+  const link = ApolloLink.from([errorLink, authLink, uploadLink]);
 
   return {
     link,
@@ -40,6 +52,6 @@ export const graphqlProviders = [
   {
     provide: APOLLO_OPTIONS,
     useFactory: createApollo,
-    deps: [],
+    deps: [Router], // Inject the router for navigation
   },
 ];
