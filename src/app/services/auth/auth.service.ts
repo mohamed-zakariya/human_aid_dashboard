@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../../interfaces/user-interface/user';
 
 const LOGIN_MUTATION = gql`
-  mutation($username: String!, $password: String!) {
+  mutation loginAdmin($username: String!, $password: String!) {
     loginAdmin(username: $username, password: $password) {
       user {
         id
@@ -54,6 +54,12 @@ export class AuthService {
     const userJson = localStorage.getItem('user');
     return userJson ? JSON.parse(userJson) : null;
   }
+
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
 
   logout() {
     localStorage.removeItem('token');
