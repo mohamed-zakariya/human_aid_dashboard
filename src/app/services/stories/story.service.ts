@@ -27,14 +27,25 @@ export class StoryService {
     );
   }
 
-  createStory(story: string, kind: string, summary: string, morale: string): Observable<any> {
+  createStory(
+    story: string,
+    kind: string,
+    summary: string | null,
+    morale: string
+  ): Observable<any> {
     return this.apollo.mutate<{ createStory: Story }>({
       mutation: CREATE_STORY,
       variables: { story, kind, summary, morale }
     });
   }
 
-  updateStory(id: string, story: string, kind: string, summary: string, morale: string): Observable<Story> {
+  updateStory(
+    id: string,
+    story: string,
+    kind: string,
+    summary: string | null,
+    morale: string | null
+  ): Observable<Story> {
     return this.apollo.mutate<{ updateStory: Story }>({
       mutation: UPDATE_STORY,
       variables: { id, story, kind, summary, morale }
@@ -42,6 +53,7 @@ export class StoryService {
       map(result => result.data?.updateStory as Story)
     );
   }
+
 
   deleteStory(id: string): Observable<Story> {
     return this.apollo.mutate<{ deleteStory: Story }>({

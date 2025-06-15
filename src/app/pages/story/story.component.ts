@@ -140,12 +140,12 @@ export class StoryComponent implements OnInit, OnDestroy {
   }
 
   addStory() {
-    if (this.newStory.story && this.newStory.kind && this.newStory.summary && this.newStory.morale) {
+    if (this.newStory.story && this.newStory.kind && this.newStory.morale) {
       this.subscription.add(
         this.storyService.createStory(
           this.newStory.story,
           this.newStory.kind,
-          this.newStory.summary,
+          this.newStory.summary?.trim() || null, // summary can be null
           this.newStory.morale
         ).subscribe({
           next: () => {
@@ -159,6 +159,7 @@ export class StoryComponent implements OnInit, OnDestroy {
       );
     }
   }
+
 
   // Edit story functionality
   editStory(story: Story) {

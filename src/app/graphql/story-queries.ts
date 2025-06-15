@@ -13,7 +13,7 @@ export const GET_STORIES = gql`
 `;
 
 export const CREATE_STORY = gql`
-  mutation CreateStory($story: String!, $kind: String!, $summary: String!, $morale: String!) {
+  mutation CreateStory($story: String!, $kind: String!, $summary: String, $morale: String!) {
     createStory(story: $story, kind: $kind, summary: $summary, morale: $morale) {
       id
       story
