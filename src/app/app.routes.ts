@@ -23,6 +23,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/sentence/sentence.component').then(c => c.SentenceComponent),
       },
       { 
+        path: 'stories', 
+        loadComponent: () => import('./pages/story/story.component').then(c => c.StoryComponent),
+      },
+      { 
         path: 'learners', 
         loadComponent: () => import('./pages/learners/learners.component').then(c => c.LearnersComponent),
       },

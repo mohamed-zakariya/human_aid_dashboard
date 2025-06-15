@@ -1,0 +1,219 @@
+<!-- stories-library.component.html -->
+<div class="stories-library-container">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="page-title">Stories Library</h1>
+    <div class="header-actions">
+      <button class="add-story-btn" (click)="showAddStoryForm()" *ngIf="!isAddingStory">
+        <span class="btn-icon">➕</span>
+        Add New Story
+      </button>
+      <button class="export-btn" (click)="exportStories()" title="Export Stories">
+        <span class="btn-icon">📁</span>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Add/Edit Story Form -->
+  <div class="story-form-container" *ngIf="isAddingStory" #storyForm>
+    <div class="story-form">
+      <div class="form-header">
+        <h3>{{ isEditingStory ? 'Edit Story' : 'Add New Story' }}</h3>
+        <button class="close-btn" (click)="hideAddStoryForm()">✖️</button>
+      </div>
+      
+      <div class="form-group">
+        <label for="storyText">Story Content</label>
+        <textarea 
+          id="storyText"
+          [(ngModel)]="newStory.story"
+          placeholder="Enter the story content here..."
+          rows="6"
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="storyKind">Story Type</label>
+          <select id="storyKind" [(ngModel)]="newStory.kind" class="form-select">
+            <option value="قصة قصيرة">Short Story</option>
+            <option value="قصة متوسطة">Medium Story</option>
+            <option value="قصة طويلة">Long Story</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="storySummary">Summary</label>
+        <textarea 
+          id="storySummary"
+          [(ngModel)]="newStory.summary"
+          placeholder="Enter story summary..."
+          rows="3"
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="storyMorale">Moral/Lesson</label>
+        <textarea 
+          id="storyMorale"
+          [(ngModel)]="newStory.morale"
+          placeholder="Enter the moral or lesson of the story..."
+          rows="2"
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="save-btn" (click)="saveStory()">
+          {{ isEditingStory ? 'Update Story' : 'Save Story' }}
+        </button>
+        <button class="cancel-btn" (click)="hideAddStoryForm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-number">{{ totalStories }}</div>
+      <div class="stat-label">Total Stories</div>
+    </div>
+    
+    <div class="stat-card short">
+      <div class="stat-number">{{ shortStories }}</div>
+      <div class="stat-label">Short Stories</div>
+    </div>
+    
+    <div class="stat-card medium">
+      <div class="stat-number">{{ mediumStories }}</div>
+      <div class="stat-label">Medium Stories</div>
+    </div>
+    
+    <div class="stat-card long">
+      <div class="stat-number">{{ longStories }}</div>
+      <div class="stat-label">Long Stories</div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="search-filters">
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search stories..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="filter-container">
+      <label for="levelFilter">Filter by Type:</label>
+      <select 
+        id="levelFilter" 
+        class="filter-select"
+        [(ngModel)]="selectedLevel"
+        (change)="onLevelChange()"
+      >
+        <option value="all">All Types</option>
+        <option value="قصة قصيرة">Short Stories</option>
+        <option value="قصة متوسطة">Medium Stories</option>
+        <option value="قصة طويلة">Long Stories</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Stories List -->
+  <div class="stories-section">
+    <h2 class="section-title">Stories List ({{ filteredStories.length }})</h2>
+    
+    <div class="stories-table-container">
+      <table class="stories-table">
+        <thead>
+          <tr>
+            <th>Story Content</th>
+            <th>Type</th>
+            <th>Summary</th>
+            <th>Moral/Lesson</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let story of filteredStories; trackBy: trackByStoryId" class="story-row">
+            <td class="story-content">
+              <div class="story-text">
+                {{ truncateText(story.story || '', 150) }}
+              </div>
+            </td>
+            
+            <td class="story-kind">
+              <span [class]="'kind-badge ' + getStoryKindClass(story.kind || '')">
+                {{ getStoryKindDisplay(story.kind || '') }}
+              </span>
+            </td>
+            
+            <td class="story-summary">
+              <div class="summary-text">
+                {{ truncateText(story.summary || '', 100) }}
+              </div>
+            </td>
+            
+            <td class="story-morale">
+              <div class="morale-text">
+                {{ truncateText(story.morale || '', 80) }}
+              </div>
+            </td>
+            
+            <td class="actions">
+              <button 
+                class="action-btn view-btn" 
+                (click)="viewStoryDetails(story)"
+                title="View Details"
+              >
+                👁️
+              </button>
+              <button 
+                class="action-btn edit-btn" 
+                (click)="editStory(story)"
+                title="Edit"
+              >
+                ✏️
+              </button>
+              <button 
+                class="action-btn duplicate-btn" 
+                (click)="duplicateStory(story)"
+                title="Duplicate"
+              >
+                📋
+              </button>
+              <button 
+                class="action-btn delete-btn" 
+                (click)="deleteStory(story)"
+                title="Delete"
+              >
+                🗑️
+              </button>
+            </td>
+          </tr>
+          
+          <tr *ngIf="filteredStories.length === 0" class="no-stories">
+            <td colspan="5" class="no-stories-message">
+              <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <div class="empty-text">No stories found</div>
+                <div class="empty-subtext">
+                  {{ stories.length === 0 ? 'Start by adding your first story!' : 'Try adjusting your search or filters.' }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

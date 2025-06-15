@@ -21,12 +21,9 @@ export class SentencesService {
 
 
 
-
-
-
   constructor(private apollo: Apollo, private http: HttpClient) {}
 
-    private graphqlUrl = 'http://localhost:5500/graphql';
+    private graphqlUrl = 'https://human-aid-deployment.onrender.com/graphql';
 
 
   getSentences(): Observable<Sentence[]> {
