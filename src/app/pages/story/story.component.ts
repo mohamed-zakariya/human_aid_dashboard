@@ -180,14 +180,16 @@ export class StoryComponent implements OnInit, OnDestroy {
   }
 
   updateStory() {
-    if (this.editingStoryId && this.newStory.story && this.newStory.kind && this.newStory.summary && this.newStory.morale) {
+    console.log('Updating with values:', this.newStory);
+    console.log(this.editingStoryId);
+    if (this.editingStoryId || this.newStory.story || this.newStory.kind || this.newStory.summary || this.newStory.morale) {
       this.subscription.add(
         this.storyService.updateStory(
-          this.editingStoryId,
-          this.newStory.story,
-          this.newStory.kind,
-          this.newStory.summary,
-          this.newStory.morale
+          this.editingStoryId!,
+          this.newStory.story!,
+          this.newStory.kind!,
+          this.newStory.summary!,
+          this.newStory.morale!
         ).subscribe({
           next: () => {
             this.loadStories();
@@ -200,6 +202,7 @@ export class StoryComponent implements OnInit, OnDestroy {
       );
     }
   }
+
 
   saveStory() {
     if (this.isEditingStory) {

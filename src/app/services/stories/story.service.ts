@@ -41,8 +41,8 @@ export class StoryService {
 
   updateStory(
     id: string,
-    story: string,
-    kind: string,
+    story: string | null,
+    kind: string | null,
     summary: string | null,
     morale: string | null
   ): Observable<Story> {
