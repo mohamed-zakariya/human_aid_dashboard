@@ -34,6 +34,7 @@ export class WordsComponent implements OnInit {
   newWord = {
     word: '',
     level: '' as 'Beginner' | 'Intermediate' | 'Advanced' | '',
+    synonym: '',  // Add synonym field
     imageUrl: ''
   };
 
@@ -79,7 +80,9 @@ export class WordsComponent implements OnInit {
       const searchLower = this.searchTerm.toLowerCase().trim();
       filtered = filtered.filter(word => 
         word.word?.toLowerCase().includes(searchLower) ||
-        word.word?.toLowerCase().startsWith(searchLower)
+        word.word?.toLowerCase().startsWith(searchLower) ||
+        word.synonym?.toLowerCase().includes(searchLower) ||  // Add synonym search
+        word.synonym?.toLowerCase().startsWith(searchLower)
       );
     }
 
@@ -174,6 +177,7 @@ export class WordsComponent implements OnInit {
     this.newWord = {
       word: word.word ?? '',
       level: word.level ?? '',
+      synonym: word.synonym ?? '',  // Add synonym
       imageUrl: word.imageUrl ?? ''
     };
     this.imagePreview = word.imageUrl ?? '';
@@ -181,9 +185,10 @@ export class WordsComponent implements OnInit {
   }
 
 
+
   // Update addWord method to refresh filters after adding
   addWord(): void {
-    const { word, level } = this.newWord;
+    const { word, level, synonym } = this.newWord;  // Add synonym to destructuring
 
     if (!word?.trim() || !level) {
       return;
@@ -194,7 +199,7 @@ export class WordsComponent implements OnInit {
 
       if (this.selectedFile) {
         this.loading = true;
-        this.wordService.updateViaHttpClient(id, word.trim(), level, this.selectedFile).subscribe({
+      this.wordService.updateViaHttpClient(id, word.trim(), level, synonym?.trim(), this.selectedFile).subscribe({
           next: (response: any) => {
             const updated = response?.data?.updateWord;
             if (updated) {
@@ -226,7 +231,7 @@ export class WordsComponent implements OnInit {
 
       } else {
         this.loading = true;
-        this.wordService.updateWord(id, word.trim(), level).subscribe({
+        this.wordService.updateWord(id, word.trim(), level, synonym?.trim()).subscribe({
           next: updated => {
             const index = this.words.findIndex(w => w.id === updated.id);
             this.words = [
@@ -253,7 +258,7 @@ export class WordsComponent implements OnInit {
       }
     } else {
       if (this.selectedFile) {
-        this.wordService.uploadViaHttpClient(word.trim(), level, this.selectedFile).subscribe({
+        this.wordService.uploadViaHttpClient(word.trim(), level, synonym?.trim(), this.selectedFile).subscribe({
           next: (response: any) => {
             const newWord = response?.data?.createWord;
             if (newWord) {
@@ -277,7 +282,7 @@ export class WordsComponent implements OnInit {
         });
 
       } else {
-        this.wordService.addWord(word.trim(), level).subscribe({
+        this.wordService.addWord(word.trim(), level, synonym?.trim()).subscribe({
           next: result => {
             const newWord = result.data?.createWord;
             if (newWord) {
@@ -309,6 +314,7 @@ export class WordsComponent implements OnInit {
     this.newWord = {
       word: '',
       level: '',
+      synonym: '',  // Add synonym reset
       imageUrl: ''
     };
     this.selectedFile = null;
@@ -317,7 +323,7 @@ export class WordsComponent implements OnInit {
     this.isEditMode = false;
     this.editingWordId = null;
   }
-
+  
   deleteWord(id: string) {
     if (confirm('Are you sure you want to delete this word?')) {
       this.loading = true;

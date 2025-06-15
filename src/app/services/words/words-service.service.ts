@@ -38,80 +38,82 @@ export class WordService {
     );
   }
 
-  updateWord(id: string, word: string, level: string, image?: File): Observable<Word> {
+  updateWord(id: string, word: string, level: string, synonym?: string, image?: File): Observable<Word> {
     return this.apollo.mutate<{ updateWord: Word }>({
       mutation: UPDATE_WORD,
-      variables: { id, word, level, image }
+      variables: { id, word, level, synonym, image }
     }).pipe(
       map(result => result.data?.updateWord as Word)
     );
   }
 
-  addWord(word: string, level: string, image?: File): Observable<any> {
+  addWord(word: string, level: string, synonym?: string, image?: File): Observable<any> {
     return this.apollo.mutate<{ createWord: Word }>({
       mutation: ADD_WORD_MUTATION,
-      variables: { word, level, image: image ?? null },
+      variables: { word, level, synonym, image: image ?? null },
       context: { useMultipart: true }
     });
   }
 
-  uploadViaHttpClient(word: string, level: string, file?: File): Observable<any> {
+  uploadViaHttpClient(word: string, level: string, synonym?: string, file?: File): Observable<any> {
     const formData = new FormData();
-
+    
     const operations = {
       query: `
-        mutation ($word: String!, $level: String!, $image: Upload) {
-          createWord(word: $word, level: $level, image: $image) {
+        mutation ($word: String!, $level: String!, $synonym: String, $image: Upload) {
+          createWord(word: $word, level: $level, synonym: $synonym, image: $image) {
             id
             word
             level
+            synonym
             imageUrl
           }
         }
       `,
-      variables: { word, level, image: null }
+      variables: { word, level, synonym, image: null }
     };
-
+    
     formData.append('operations', JSON.stringify(operations));
-
+    
     if (file) {
       const map = { '0': ['variables.image'] };
       formData.append('map', JSON.stringify(map));
       formData.append('0', file);
     }
-
+    
     const headers = new HttpHeaders({ 'x-apollo-operation-name': 'createWord' });
-
+    
     return this.http.post(this.graphqlUrl, formData, { headers });
   }
 
-  updateViaHttpClient(id: string, word: string, level: string, file?: File): Observable<any> {
+  updateViaHttpClient(id: string, word: string, level: string, synonym?: string, file?: File): Observable<any> {
     const formData = new FormData();
-
+    
     const operations = {
       query: `
-        mutation ($id: ID!, $word: String, $level: String, $image: Upload) {
-          updateWord(id: $id, word: $word, level: $level, image: $image) {
+        mutation ($id: ID!, $word: String, $level: String, $synonym: String, $image: Upload) {
+          updateWord(id: $id, word: $word, level: $level, synonym: $synonym, image: $image) {
             id
             word
             level
+            synonym
             imageUrl
           }
         }
       `,
-      variables: { id, word, level, image: null }
+      variables: { id, word, level, synonym, image: null }
     };
-
+    
     formData.append('operations', JSON.stringify(operations));
-
+    
     if (file) {
       const map = { '0': ['variables.image'] };
       formData.append('map', JSON.stringify(map));
       formData.append('0', file);
     }
-
+    
     const headers = new HttpHeaders({ 'x-apollo-operation-name': 'updateWord' });
-
+    
     return this.http.post(this.graphqlUrl, formData, { headers });
   }
 }

@@ -59,7 +59,7 @@
             </svg>
             <input 
                 type="text" 
-                placeholder="Search words..." 
+                placeholder="Search words or synonyms..." 
                 class="search-input"
                 [(ngModel)]="searchTerm"
                 (input)="onSearchChange()"
@@ -102,12 +102,13 @@
     <div class="table-wrapper" *ngIf="getFilteredWords().length > 0; else noResults">
         <table class="words-table">
             <thead>
-            <tr>
-                <th>Image</th>
-                <th>Word</th>
-                <th>Level</th>
-                <th>Actions</th>
-            </tr>
+                <tr>
+                    <th>Image</th>
+                    <th>Word</th>
+                    <th>Synonym</th>  <!-- Add this column -->
+                    <th>Level</th>
+                    <th>Actions</th>
+                </tr>
             </thead>
             <tbody>
             <tr *ngFor="let word of getFilteredWords(); trackBy: trackByWord" class="table-row">
@@ -135,6 +136,10 @@
                 </td>
                 <td class="word-cell">
                 <span class="word-text">{{ word.word }}</span>
+                </td>
+                <td class="synonym-cell">
+                <span class="synonym-text" *ngIf="word.synonym">{{ word.synonym }}</span>
+                <span class="no-synonym" *ngIf="!word.synonym">-</span>
                 </td>
                 <td class="level-cell">
                 <span class="level-badge" *ngIf="word.level" [class]="'level-' + word.level.toLowerCase()">
@@ -223,6 +228,18 @@
             Word is required
             </div>
         </div>
+
+        <div class="form-group">
+            <label for="synonym">Synonym</label>
+            <input 
+                type="text" 
+                id="synonym" 
+                name="synonym"
+                [(ngModel)]="newWord.synonym" 
+                class="form-input"
+                placeholder="Enter synonym (optional)" />
+        </div>
+
 
         <div class="form-group">
             <label for="level">Level</label>
