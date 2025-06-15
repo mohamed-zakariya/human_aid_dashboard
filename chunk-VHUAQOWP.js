@@ -1,4 +1,4 @@
-import{a as N,b as W}from"./chunk-JOOI5EYZ.js";import{a as re,b as ae}from"./chunk-EKQIGHUF.js";import{b as R,d as J,e as Y,f as Q,g as K,h as X,l as Z,m as ee,n as te,q as ne,s as oe}from"./chunk-QXUGHGNG.js";import{$a as U,Aa as I,Ea as s,Ia as V,Na as B,Pb as D,Qb as q,Ra as b,S as j,Sb as G,X as F,Xa as A,Ya as m,_a as $,ab as n,bb as r,ca as g,cb as f,da as p,db as u,ea as C,eb as h,fa as M,fb as d,kb as x,lb as a,lc as ie,mb as O,mc as y,nb as E,ob as H,rb as k,sb as S,tb as w,v as P,yb as L}from"./chunk-CXW7HID3.js";var ce=y`
+import{a as N,b as W}from"./chunk-ILPJERIC.js";import{a as re,b as ae}from"./chunk-QUI7HCQD.js";import{b as R,d as J,e as Y,f as Q,g as K,h as X,l as Z,m as ee,n as te,q as ne,s as oe}from"./chunk-5362R2GJ.js";import{$a as U,Aa as I,Ea as s,Ia as V,Na as B,Pb as D,Qb as q,Ra as b,S as j,Sb as G,X as F,Xa as A,Ya as m,_a as $,ab as n,bb as r,ca as g,cb as f,da as p,db as u,ea as C,eb as h,fa as M,fb as d,kb as x,lb as a,lc as ie,mb as O,mc as y,nb as E,ob as H,rb as k,sb as S,tb as w,v as P,yb as L}from"./chunk-2YG6MXUL.js";var ce=y`
   query GetSentences {
     getSentences {
       id
@@ -30,7 +30,7 @@ import{a as N,b as W}from"./chunk-JOOI5EYZ.js";import{a as re,b as ae}from"./chu
       level
     }
   }
-`;var T=class c{constructor(o,e){this.apollo=o;this.http=e}graphqlUrl="http://localhost:5500/graphql";getSentences(){return this.apollo.watchQuery({query:ce}).valueChanges.pipe(P(o=>o.data?.getSentences??[]))}createSentence(o,e){return this.apollo.mutate({mutation:z,variables:{sentence:o,level:e}}).pipe(P(t=>t.data?.createSentence))}updateSentence(o,e,t){return this.apollo.mutate({mutation:le,variables:{id:o,sentence:e,level:t}}).pipe(P(i=>i.data?.updateSentence))}deleteSentence(o){return this.apollo.mutate({mutation:se,variables:{id:o}}).pipe(P(e=>e.data?.deleteSentence))}addSentence(o,e){return this.apollo.mutate({mutation:z,variables:{sentence:o,level:e}}).pipe(P(t=>t.data?.createSentence))}uploadViaHttpClient(o,e,t){let i=new FormData,l={query:`
+`;var T=class c{constructor(o,e){this.apollo=o;this.http=e}graphqlUrl="https://human-aid-deployment.onrender.com/graphql";getSentences(){return this.apollo.watchQuery({query:ce}).valueChanges.pipe(P(o=>o.data?.getSentences??[]))}createSentence(o,e){return this.apollo.mutate({mutation:z,variables:{sentence:o,level:e}}).pipe(P(t=>t.data?.createSentence))}updateSentence(o,e,t){return this.apollo.mutate({mutation:le,variables:{id:o,sentence:e,level:t}}).pipe(P(i=>i.data?.updateSentence))}deleteSentence(o){return this.apollo.mutate({mutation:se,variables:{id:o}}).pipe(P(e=>e.data?.deleteSentence))}addSentence(o,e){return this.apollo.mutate({mutation:z,variables:{sentence:o,level:e}}).pipe(P(t=>t.data?.createSentence))}uploadViaHttpClient(o,e,t){let i=new FormData,l={query:`
       mutation ($sentence: String!, $level: String!, $image: Upload) {
         createSentence(sentence: $sentence, level: $level, image: $image) {
           id

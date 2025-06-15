@@ -1,4 +1,4 @@
-import{a as L,b as R}from"./chunk-JOOI5EYZ.js";import{a as re,b as ie}from"./chunk-EKQIGHUF.js";import{b as q,d as G,e as J,f as Y,g as Q,h as K,l as X,m as Z,n as ee,q as te,s as ne}from"./chunk-QXUGHGNG.js";import{$a as N,Aa as F,Ea as c,Ia as T,Na as U,Pb as j,Qb as B,Ra as C,S as z,Sb as H,X as I,Xa as V,Ya as m,Yb as W,Zb as pe,_a as D,ab as t,bb as r,ca as g,cb as f,da as p,db as u,ea as b,eb as _,fa as M,fb as s,kb as O,lb as a,lc as oe,mb as x,nb as S,ob as $,rb as w,sb as v,tb as k,v as y,yb as A}from"./chunk-CXW7HID3.js";pe();var ae=W`
+import{a as L,b as R}from"./chunk-ILPJERIC.js";import{a as re,b as ie}from"./chunk-QUI7HCQD.js";import{b as q,d as G,e as J,f as Y,g as Q,h as K,l as X,m as Z,n as ee,q as te,s as ne}from"./chunk-5362R2GJ.js";import{$a as N,Aa as F,Ea as c,Ia as T,Na as U,Pb as j,Qb as B,Ra as C,S as z,Sb as H,X as I,Xa as V,Ya as m,Yb as W,Zb as pe,_a as D,ab as t,bb as r,ca as g,cb as f,da as p,db as u,ea as b,eb as _,fa as M,fb as s,kb as O,lb as a,lc as oe,mb as x,nb as S,ob as $,rb as w,sb as v,tb as k,v as y,yb as A}from"./chunk-2YG6MXUL.js";pe();var ae=W`
   query getWords {
     getWords {
       id
@@ -34,7 +34,7 @@ import{a as L,b as R}from"./chunk-JOOI5EYZ.js";import{a as re,b as ie}from"./chu
       imageUrl
     }
   }
-`;var E=class d{constructor(i,e){this.apollo=i;this.http=e}graphqlUrl="http://localhost:5500/graphql";getWords(){return this.apollo.watchQuery({query:ae}).valueChanges.pipe(y(i=>i.data?.getWords??[]))}deleteWord(i){return this.apollo.mutate({mutation:de,variables:{id:i}}).pipe(y(e=>e.data?.deleteWord))}updateWord(i,e,n,o){return this.apollo.mutate({mutation:le,variables:{id:i,word:e,level:n,image:o}}).pipe(y(l=>l.data?.updateWord))}addWord(i,e,n){return this.apollo.mutate({mutation:ce,variables:{word:i,level:e,image:n??null},context:{useMultipart:!0}})}uploadViaHttpClient(i,e,n){let o=new FormData,l={query:`
+`;var E=class d{constructor(i,e){this.apollo=i;this.http=e}graphqlUrl="https://human-aid-deployment.onrender.com/graphql";getWords(){return this.apollo.watchQuery({query:ae}).valueChanges.pipe(y(i=>i.data?.getWords??[]))}deleteWord(i){return this.apollo.mutate({mutation:de,variables:{id:i}}).pipe(y(e=>e.data?.deleteWord))}updateWord(i,e,n,o){return this.apollo.mutate({mutation:le,variables:{id:i,word:e,level:n,image:o}}).pipe(y(l=>l.data?.updateWord))}addWord(i,e,n){return this.apollo.mutate({mutation:ce,variables:{word:i,level:e,image:n??null},context:{useMultipart:!0}})}uploadViaHttpClient(i,e,n){let o=new FormData,l={query:`
         mutation ($word: String!, $level: String!, $image: Upload) {
           createWord(word: $word, level: $level, image: $image) {
             id
