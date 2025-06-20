@@ -1,43 +1,42 @@
 <div class="words-container">
     <!-- Header Section -->
     <div class="page-header">
-    <h1 class="page-title">Words Management</h1>
-    <button class="add-btn" (click)="toggleAddModal()">
-        <svg class="add-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Add New Word
-    </button>
+        <h1 class="page-title">Words Management</h1>
+        <button class="add-btn" (click)="toggleAddModal()">
+            <svg class="add-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add New Word
+        </button>
     </div>
-
 
     <!-- Statistics Cards -->
     <div class="stats-grid">
-    <div class="stat-card">
-        <h3>{{ getTotalWords() }}</h3>
-        <p>Total Words</p>
-    </div>
-    <div class="stat-card">
-        <h3>{{ getWordsByLevel('Beginner') }}</h3>
-        <p>Beginner</p>
-    </div>
-    <div class="stat-card">
-        <h3>{{ getWordsByLevel('Intermediate') }}</h3>
-        <p>Intermediate</p>
-    </div>
-    <div class="stat-card">
-        <h3>{{ getWordsByLevel('Advanced') }}</h3>
-        <p>Advanced</p>
-    </div>
+        <div class="stat-card">
+            <h3>{{ getTotalWords() }}</h3>
+            <p>Total Words</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ getWordsByLevel('Beginner') }}</h3>
+            <p>Beginner</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ getWordsByLevel('Intermediate') }}</h3>
+            <p>Intermediate</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ getWordsByLevel('Advanced') }}</h3>
+            <p>Advanced</p>
+        </div>
     </div>
 
     <!-- Error Message -->
     <div *ngIf="error" class="error-message">
         <div class="error-icon">⚠️</div>
         <div class="error-text">
-        <h3>Error</h3>
-        <p>{{error}}</p>
-        <button class="retry-btn" (click)="loadWords()">Try Again</button>
+            <h3>Error</h3>
+            <p>{{error}}</p>
+            <button class="retry-btn" (click)="loadWords()">Try Again</button>
         </div>
     </div>
 
@@ -47,158 +46,239 @@
         <p>Loading words...</p>
     </div>
 
-
-    <!-- Add this section right after the stats-grid and before the table-container -->
     <!-- Search and Filter Section -->
     <div class="search-filter-container">
         <div class="search-section">
             <div class="search-input-wrapper">
-            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <input 
-                type="text" 
-                placeholder="Search words or synonyms..." 
-                class="search-input"
-                [(ngModel)]="searchTerm"
-                (input)="onSearchChange()"
-                name="search">
-            <button *ngIf="searchTerm" class="clear-search-btn" (click)="clearSearch()">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-            </button>
+                <input 
+                    type="text" 
+                    placeholder="Search words or synonyms..." 
+                    class="search-input"
+                    [(ngModel)]="searchTerm"
+                    (input)="onSearchChange()"
+                    name="search">
+                <button *ngIf="searchTerm" class="clear-search-btn" (click)="clearSearch()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
         </div>
 
         <div class="filter-section">
             <label class="filter-label">Filter by Level:</label>
             <select class="filter-select" [(ngModel)]="selectedLevelFilter" (change)="onFilterChange()" name="levelFilter">
-            <option value="">All Levels</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
+                <option value="">All Levels</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
             </select>
         </div>
 
         <div class="results-info" *ngIf="searchTerm || selectedLevelFilter">
             <span class="results-count">
-            Showing {{ getFilteredWords().length }} of {{ words.length }} words
+                Showing {{ getFilteredWords().length }} of {{ filteredWords.length }} words
             </span>
             <button class="clear-all-btn" (click)="clearAllFilters()">
-            Clear All Filters
+                Clear All Filters
             </button>
         </div>
     </div>
 
+    <!-- Pagination Controls Header -->
+    <div class="pagination-header" *ngIf="filteredWords.length > 0">
+        <div class="pagination-info">
+            <span class="pagination-text">{{ getPaginationInfo() }}</span>
+        </div>
+        <div class="items-per-page">
+            <label for="itemsPerPage">Items per page:</label>
+            <select 
+                id="itemsPerPage" 
+                class="items-per-page-select" 
+                [(ngModel)]="itemsPerPage" 
+                (change)="onItemsPerPageChange()"
+                name="itemsPerPage">
+                <option *ngFor="let option of itemsPerPageOptions" [value]="option">
+                    {{ option }}
+                </option>
+            </select>
+        </div>
+    </div>
     
     <!-- Words Table -->
     <div class="table-container">
-    <div class="table-header">
-        <h2>Words List</h2>
-    </div>
-    
-    <div class="table-wrapper" *ngIf="getFilteredWords().length > 0; else noResults">
-        <table class="words-table">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Word</th>
-                    <th>Synonym</th>  <!-- Add this column -->
-                    <th>Level</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let word of getFilteredWords(); trackBy: trackByWord" class="table-row">
-                <!-- Modern Image Cell Template -->
-                <td class="image-cell">
-                <div class="image-container" [class.no-image]="!hasValidImage(word)">
-                    <img *ngIf="hasValidImage(word)" 
-                        [src]="word.imageUrl" 
-                        [alt]="word.word" 
-                        class="word-image" 
-                        loading="lazy"
-                        (error)="handleImageError($event)" />
-                    
-                    <div *ngIf="!hasValidImage(word)" class="no-image-placeholder">
-                    <div class="placeholder-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <circle cx="9" cy="9" r="2"/>
-                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                        </svg>
-                    </div>
-                    <span class="no-image-text">No Image</span>
-                    </div>
-                </div>
-                </td>
-                <td class="word-cell">
-                <span class="word-text">{{ word.word }}</span>
-                </td>
-                <td class="synonym-cell">
-                <span class="synonym-text" *ngIf="word.synonym">{{ word.synonym }}</span>
-                <span class="no-synonym" *ngIf="!word.synonym">-</span>
-                </td>
-                <td class="level-cell">
-                <span class="level-badge" *ngIf="word.level" [class]="'level-' + word.level.toLowerCase()">
-                    {{ word.level }}
-                </span>
-                <span *ngIf="!word.level" class="level-badge level-unknown">Unknown</span>
-                </td>
-                <td class="actions-cell">
-                <div style="display: flex; justify-content: space-between;">
-                    <button class="edit-btn" (click)="openEditModal(word)" 
-                            [attr.aria-label]="'Edit ' + word.word">
-                    <svg class="edit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    </button>
-
-                    <button class="delete-btn" (click)="deleteWord(word.id)" 
-                            [attr.aria-label]="'Delete ' + word.word">
-                    <svg class="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    </button>
-                </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <ng-template #noResults>
-        <div class="no-results-state" *ngIf="searchTerm || selectedLevelFilter; else noWords">
-            <div class="no-results-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            </div>
-            <h3>No results found</h3>
-            <p>Try adjusting your search term or filter criteria.</p>
-            <button class="clear-all-btn" (click)="clearAllFilters()" style="margin-top: 16px;">
-            Clear All Filters
-            </button>
+        <div class="table-header">
+            <h2>Words List</h2>
         </div>
         
-        <ng-template #noWords>
-            <div class="empty-state">
-            <div class="empty-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
+        <div class="table-wrapper" *ngIf="getFilteredWords().length > 0; else noResults">
+            <table class="words-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Word</th>
+                        <th>Synonym</th>
+                        <th>Level</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let word of getFilteredWords(); trackBy: trackByWord" class="table-row">
+                        <!-- Modern Image Cell Template -->
+                        <td class="image-cell">
+                            <div class="image-container" [class.no-image]="!hasValidImage(word)">
+                                <img *ngIf="hasValidImage(word)" 
+                                    [src]="word.imageUrl" 
+                                    [alt]="word.word" 
+                                    class="word-image" 
+                                    loading="lazy"
+                                    (error)="handleImageError($event)" />
+                                
+                                <div *ngIf="!hasValidImage(word)" class="no-image-placeholder">
+                                    <div class="placeholder-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                            <circle cx="9" cy="9" r="2"/>
+                                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                                        </svg>
+                                    </div>
+                                    <span class="no-image-text">No Image</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="word-cell">
+                            <span class="word-text">{{ word.word }}</span>
+                        </td>
+                        <td class="synonym-cell">
+                            <span class="synonym-text" *ngIf="word.synonym">{{ word.synonym }}</span>
+                            <span class="no-synonym" *ngIf="!word.synonym">-</span>
+                        </td>
+                        <td class="level-cell">
+                            <span class="level-badge" *ngIf="word.level" [class]="'level-' + word.level.toLowerCase()">
+                                {{ word.level }}
+                            </span>
+                            <span *ngIf="!word.level" class="level-badge level-unknown">Unknown</span>
+                        </td>
+                        <td class="actions-cell">
+                            <div style="display: flex; justify-content: space-between;">
+                                <button class="edit-btn" (click)="openEditModal(word)" 
+                                        [attr.aria-label]="'Edit ' + word.word">
+                                    <svg class="edit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+
+                                <button class="delete-btn" (click)="deleteWord(word.id)" 
+                                        [attr.aria-label]="'Delete ' + word.word">
+                                    <svg class="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" *ngIf="totalPages > 1">
+            <div class="pagination-controls">
+                <!-- First Page Button -->
+                <button 
+                    class="pagination-btn first-page" 
+                    [disabled]="currentPage === 1"
+                    (click)="goToFirstPage()"
+                    [attr.aria-label]="'Go to first page'">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                <!-- Previous Button -->
+                <button 
+                    class="pagination-btn previous" 
+                    [disabled]="currentPage === 1"
+                    (click)="goToPreviousPage()"
+                    [attr.aria-label]="'Go to previous page'">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Previous
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="page-numbers">
+                    <button 
+                        *ngFor="let page of getVisiblePageNumbers()" 
+                        class="pagination-btn page-number"
+                        [class.active]="page === currentPage"
+                        (click)="onPageChange(page)"
+                        [attr.aria-label]="'Go to page ' + page">
+                        {{ page }}
+                    </button>
+                </div>
+
+                <!-- Next Button -->
+                <button 
+                    class="pagination-btn next" 
+                    [disabled]="currentPage === totalPages"
+                    (click)="goToNextPage()"
+                    [attr.aria-label]="'Go to next page'">
+                    Next
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+
+                <!-- Last Page Button -->
+                <button 
+                    class="pagination-btn last-page" 
+                    [disabled]="currentPage === totalPages"
+                    (click)="goToLastPage()"
+                    [attr.aria-label]="'Go to last page'">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
-            <h3>No words found</h3>
-            <p>Start by adding your first word to the collection.</p>
+        </div>
+
+        <ng-template #noResults>
+            <div class="no-results-state" *ngIf="searchTerm || selectedLevelFilter; else noWords">
+                <div class="no-results-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <h3>No results found</h3>
+                <p>Try adjusting your search term or filter criteria.</p>
+                <button class="clear-all-btn" (click)="clearAllFilters()" style="margin-top: 16px;">
+                    Clear All Filters
+                </button>
             </div>
+            
+            <ng-template #noWords>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h3>No words found</h3>
+                    <p>Start by adding your first word to the collection.</p>
+                </div>
+            </ng-template>
         </ng-template>
-    </ng-template>
+    </div>
 
     <!-- Add Word Modal -->
     <div class="modal-overlay" *ngIf="showAddModal" (click)="closeModal($event)">

@@ -686,3 +686,255 @@
   }
   
 }
+
+/* Add these styles to your existing CSS file */
+
+/* Page size selector */
+.page-size-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-size-container label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.page-size-select {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  font-size: 0.875rem;
+  min-width: 70px;
+}
+
+.page-size-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Section header with pagination info */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Pagination container */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+/* Pagination controls */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+.pagination-btn.active {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.pagination-btn.active:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Page numbers container */
+.page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 0.5rem;
+}
+
+/* Navigation buttons */
+.first-btn,
+.last-btn,
+.prev-btn,
+.next-btn {
+  font-size: 1rem;
+}
+
+/* Page jump section */
+.page-jump {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.page-input {
+  width: 4rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.page-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .pagination-controls {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .page-jump {
+    justify-content: center;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .search-filters {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .page-size-container {
+    justify-content: flex-start;
+  }
+}
+
+/* Enhanced search filters layout */
+.search-filters {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.search-container {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-container,
+.page-size-container {
+  flex-shrink: 0;
+}
+
+/* Ellipsis styling for page numbers */
+.pagination-btn[disabled]:contains('...') {
+  background-color: transparent;
+  border: none;
+  opacity: 1;
+  cursor: default;
+}
+
+/* Loading state for pagination */
+.pagination-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+/* Improved table responsiveness with pagination */
+.stories-table-container {
+  min-height: 400px; /* Ensure consistent height */
+  position: relative;
+}
+
+/* Empty state adjustments */
+.no-stories-message {
+  padding: 3rem 1rem;
+}
+
+/* Smooth transitions */
+.story-row {
+  transition: all 0.2s ease-in-out;
+}
+
+.stories-table tbody tr {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states for accessibility */
+.pagination-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.page-input:focus,
+.page-size-select:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

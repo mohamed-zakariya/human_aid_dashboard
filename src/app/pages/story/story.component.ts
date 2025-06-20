@@ -15,14 +15,21 @@ import { Story } from '../../interfaces/story-interface/story';
 })
 export class StoryComponent implements OnInit, OnDestroy {
 
-@ViewChild('storyForm') storyFormRef!: ElementRef;
+  @ViewChild('storyForm') storyFormRef!: ElementRef;
+  
   stories: Story[] = [];
   filteredStories: Story[] = [];
+  paginatedStories: Story[] = [];
   searchTerm: string = '';
   selectedLevel: string = 'all';
   isAddingStory: boolean = false;
   isEditingStory: boolean = false;
   editingStoryId: string | null = null;
+  
+  // Pagination properties
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 0;
   
   // New story form data
   newStory: Partial<Story> = {
@@ -75,6 +82,96 @@ export class StoryComponent implements OnInit, OnDestroy {
       
       return matchesSearch && matchesLevel;
     });
+
+    // Reset to first page when filters change
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredStories.length / this.pageSize);
+    
+    // Ensure current page is valid
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+    
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, this.filteredStories.length);
+    
+    this.paginatedStories = this.filteredStories.slice(startIndex, endIndex);
+  }
+
+  // Pagination computed properties
+  get startIndex(): number {
+    return (this.currentPage - 1) * this.pageSize;
+  }
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.filteredStories.length);
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
+
+  onPageSizeChange() {
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  getVisiblePages(): (number | string)[] {
+    const visiblePages: (number | string)[] = [];
+    const maxVisiblePages = 7;
+    
+    if (this.totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is small
+      for (let i = 1; i <= this.totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      // Show pages with ellipsis
+      const startPage = Math.max(1, this.currentPage - 2);
+      const endPage = Math.min(this.totalPages, this.currentPage + 2);
+      
+      if (startPage > 1) {
+        visiblePages.push(1);
+        if (startPage > 2) {
+          visiblePages.push('...');
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        visiblePages.push(i);
+      }
+      
+      if (endPage < this.totalPages) {
+        if (endPage < this.totalPages - 1) {
+          visiblePages.push('...');
+        }
+        visiblePages.push(this.totalPages);
+      }
+    }
+    
+    return visiblePages;
   }
 
   onSearchChange() {
@@ -145,7 +242,7 @@ export class StoryComponent implements OnInit, OnDestroy {
         this.storyService.createStory(
           this.newStory.story,
           this.newStory.kind,
-          this.newStory.summary?.trim() || null, // summary can be null
+          this.newStory.summary?.trim() || null,
           this.newStory.morale
         ).subscribe({
           next: () => {
@@ -160,11 +257,10 @@ export class StoryComponent implements OnInit, OnDestroy {
     }
   }
 
-
   // Edit story functionality
   editStory(story: Story) {
     this.isEditingStory = true;
-    this.isAddingStory = true; // Use same form
+    this.isAddingStory = true;
     this.editingStoryId = story.id || null;
     this.newStory = {
       story: story.story,
@@ -203,7 +299,6 @@ export class StoryComponent implements OnInit, OnDestroy {
     }
   }
 
-
   saveStory() {
     if (this.isEditingStory) {
       this.updateStory();
@@ -238,7 +333,6 @@ export class StoryComponent implements OnInit, OnDestroy {
 
   // Method to view full story details
   viewStoryDetails(story: Story) {
-    // Navigate to story details page or open modal
     console.log('View story details:', story);
   }
 

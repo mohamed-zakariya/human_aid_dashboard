@@ -126,11 +126,35 @@
         <option value="قصة طويلة">Long Stories</option>
       </select>
     </div>
+
+    <!-- Items per page selector -->
+    <div class="page-size-container">
+      <label for="pageSize">Items per page:</label>
+      <select 
+        id="pageSize" 
+        class="page-size-select"
+        [(ngModel)]="pageSize"
+        (change)="onPageSizeChange()"
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+    </div>
   </div>
 
   <!-- Stories List -->
   <div class="stories-section">
-    <h2 class="section-title">Stories List ({{ filteredStories.length }})</h2>
+    <div class="section-header">
+      <h2 class="section-title">Stories List ({{ filteredStories.length }})</h2>
+      
+      <!-- Pagination Info -->
+      <div class="pagination-info" *ngIf="filteredStories.length > 0">
+        Showing {{ startIndex + 1 }} - {{ endIndex }} of {{ filteredStories.length }} stories
+      </div>
+    </div>
     
     <div class="stories-table-container">
       <table class="stories-table">
@@ -144,7 +168,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let story of filteredStories; trackBy: trackByStoryId" class="story-row">
+          <tr *ngFor="let story of paginatedStories; trackBy: trackByStoryId" class="story-row">
             <td class="story-content">
               <div class="story-text">
                 {{ truncateText(story.story || '', 150) }}
@@ -207,6 +231,78 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-container" *ngIf="filteredStories.length > pageSize">
+      <div class="pagination-controls">
+        <!-- First Page Button -->
+        <button 
+          class="pagination-btn first-btn"
+          [disabled]="currentPage === 1"
+          (click)="goToPage(1)"
+          title="First Page"
+        >
+          ⏮️
+        </button>
+
+        <!-- Previous Page Button -->
+        <button 
+          class="pagination-btn prev-btn"
+          [disabled]="currentPage === 1"
+          (click)="previousPage()"
+          title="Previous Page"
+        >
+          ◀️
+        </button>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          <button 
+            *ngFor="let page of getVisiblePages()"
+            class="pagination-btn page-btn"
+            [class.active]="page === currentPage"
+            [disabled]="page === '...'"
+            (click)="page !== '...' && goToPage(+page)"
+          >
+            {{ page }}
+          </button>
+        </div>
+
+        <!-- Next Page Button -->
+        <button 
+          class="pagination-btn next-btn"
+          [disabled]="currentPage === totalPages"
+          (click)="nextPage()"
+          title="Next Page"
+        >
+          ▶️
+        </button>
+
+        <!-- Last Page Button -->
+        <button 
+          class="pagination-btn last-btn"
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(totalPages)"
+          title="Last Page"
+        >
+          ⏭️
+        </button>
+      </div>
+
+      <!-- Jump to Page -->
+      <div class="page-jump">
+        <span>Go to page:</span>
+        <input 
+          type="number" 
+          class="page-input"
+          [value]="currentPage"
+          (keyup.enter)="goToPage(+$event.target.value)"
+          [min]="1"
+          [max]="totalPages"
+        >
+        <span>of {{ totalPages }}</span>
+      </div>
     </div>
   </div>
 </div>

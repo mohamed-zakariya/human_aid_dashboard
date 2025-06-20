@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WordService } from '../../services/words/words-service.service';
-import { Word } from '../../interfaces/word-interface/word'; // Make sure this exists and is correct
+import { Word } from '../../interfaces/word-interface/word';
 import { ToastComponent } from '../../layout/toast/toast.component';
 import { ToastService } from '../../services/notification/toast.service';
 
@@ -21,20 +21,29 @@ export class WordsComponent implements OnInit {
   imagePreview = '';
   isEditMode = false;
   editingWordId: string | null = null;
-  // New search and filter properties
+  
+  // Search and filter properties
   searchTerm: string = '';
   selectedLevelFilter: string = '';
   filteredWords: Word[] = [];
 
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalPages: number = 0;
+  paginatedWords: Word[] = [];
+  
+  // Pagination display options
+  itemsPerPageOptions: number[] = [5, 10, 15, 20, 25, 50];
+  maxVisiblePages: number = 5;
+
   loading: boolean = false;
   error: string = '';
-  
-  
 
   newWord = {
     word: '',
     level: '' as 'Beginner' | 'Intermediate' | 'Advanced' | '',
-    synonym: '',  // Add synonym field
+    synonym: '',
     imageUrl: ''
   };
 
@@ -50,7 +59,8 @@ export class WordsComponent implements OnInit {
     this.wordService.getWords().subscribe({
       next: (data) => {
         this.words = data;
-        this.filteredWords = [...this.words]; // Initialize filtered words
+        this.filteredWords = [...this.words];
+        this.applyPagination();
         console.log('Loaded words:', this.words.map(w => ({id: w.id, word: w.word})));
         this.loading = false;
       },
@@ -62,13 +72,14 @@ export class WordsComponent implements OnInit {
     });
   }
 
-  // New search and filter methods
+  // Enhanced search and filter methods
   onSearchChange(): void {
+    this.currentPage = 1; // Reset to first page when searching
     this.applyFilters();
   }
 
-
   onFilterChange(): void {
+    this.currentPage = 1; // Reset to first page when filtering
     this.applyFilters();
   }
 
@@ -81,7 +92,7 @@ export class WordsComponent implements OnInit {
       filtered = filtered.filter(word => 
         word.word?.toLowerCase().includes(searchLower) ||
         word.word?.toLowerCase().startsWith(searchLower) ||
-        word.synonym?.toLowerCase().includes(searchLower) ||  // Add synonym search
+        word.synonym?.toLowerCase().includes(searchLower) ||
         word.synonym?.toLowerCase().startsWith(searchLower)
       );
     }
@@ -92,26 +103,100 @@ export class WordsComponent implements OnInit {
     }
 
     this.filteredWords = filtered;
+    this.applyPagination();
   }
 
+  // Pagination methods
+  applyPagination(): void {
+    this.totalPages = Math.ceil(this.filteredWords.length / this.itemsPerPage);
+    
+    // Ensure current page is within bounds
+    if (this.currentPage > this.totalPages && this.totalPages > 0) {
+      this.currentPage = this.totalPages;
+    }
+    if (this.currentPage < 1) {
+      this.currentPage = 1;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedWords = this.filteredWords.slice(startIndex, endIndex);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.applyPagination();
+    }
+  }
+
+  onItemsPerPageChange(): void {
+    this.currentPage = 1; // Reset to first page
+    this.applyPagination();
+  }
+
+  goToFirstPage(): void {
+    this.onPageChange(1);
+  }
+
+  goToLastPage(): void {
+    this.onPageChange(this.totalPages);
+  }
+
+  goToPreviousPage(): void {
+    this.onPageChange(this.currentPage - 1);
+  }
+
+  goToNextPage(): void {
+    this.onPageChange(this.currentPage + 1);
+  }
+
+  getVisiblePageNumbers(): number[] {
+    const pages: number[] = [];
+    const half = Math.floor(this.maxVisiblePages / 2);
+    let start = Math.max(1, this.currentPage - half);
+    let end = Math.min(this.totalPages, start + this.maxVisiblePages - 1);
+
+    // Adjust start if we're near the end
+    if (end - start + 1 < this.maxVisiblePages) {
+      start = Math.max(1, end - this.maxVisiblePages + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  getPaginationInfo(): string {
+    if (this.filteredWords.length === 0) {
+      return 'No items to display';
+    }
+
+    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+    const end = Math.min(this.currentPage * this.itemsPerPage, this.filteredWords.length);
+    const total = this.filteredWords.length;
+
+    return `Showing ${start}-${end} of ${total} words`;
+  }
 
   getFilteredWords(): Word[] {
-    return this.filteredWords;
+    return this.paginatedWords; // Return paginated words instead of all filtered words
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   clearAllFilters(): void {
     this.searchTerm = '';
     this.selectedLevelFilter = '';
+    this.currentPage = 1;
     this.applyFilters();
   }
-
-
-
 
   saveWords() {
     localStorage.setItem('words', JSON.stringify(this.words));
@@ -124,18 +209,13 @@ export class WordsComponent implements OnInit {
     }
   }
 
-
   getDisplayWords(): Word[] {
     return this.getFilteredWords();
   }
 
-
-
-
   getFilteredTotalWords(): number {
-    return this.getFilteredWords().length;
+    return this.filteredWords.length; // Return total filtered count, not paginated count
   }
-
 
   closeModal(event: Event) {
     if (event.target === event.currentTarget) {
@@ -177,18 +257,15 @@ export class WordsComponent implements OnInit {
     this.newWord = {
       word: word.word ?? '',
       level: word.level ?? '',
-      synonym: word.synonym ?? '',  // Add synonym
+      synonym: word.synonym ?? '',
       imageUrl: word.imageUrl ?? ''
     };
     this.imagePreview = word.imageUrl ?? '';
     this.showAddModal = true;
   }
 
-
-
-  // Update addWord method to refresh filters after adding
   addWord(): void {
-    const { word, level, synonym } = this.newWord;  // Add synonym to destructuring
+    const { word, level, synonym } = this.newWord;
 
     if (!word?.trim() || !level) {
       return;
@@ -199,7 +276,7 @@ export class WordsComponent implements OnInit {
 
       if (this.selectedFile) {
         this.loading = true;
-      this.wordService.updateViaHttpClient(id, word.trim(), level, synonym?.trim(), this.selectedFile).subscribe({
+        this.wordService.updateViaHttpClient(id, word.trim(), level, synonym?.trim(), this.selectedFile).subscribe({
           next: (response: any) => {
             const updated = response?.data?.updateWord;
             if (updated) {
@@ -212,9 +289,8 @@ export class WordsComponent implements OnInit {
               this.saveWords();
               this.toggleAddModal();
               this.resetForm();
-              // Add this toast notification
               this.toastService.showSuccess('Word Updated!', `"${updated.word}" has been successfully updated.`);
-              this.loadWords(); // ✅ Refresh the list from the server
+              this.loadWords();
               window.location.reload();
               this.loading = false;
             } else {
@@ -224,7 +300,6 @@ export class WordsComponent implements OnInit {
           },
           error: err => {
             console.error('Error updating word via HttpClient:', err);
-            // Add error toast
             this.toastService.showError('Update Failed', 'Failed to update the word. Please try again.');
           }
         });
@@ -242,15 +317,13 @@ export class WordsComponent implements OnInit {
             this.saveWords();
             this.toggleAddModal();
             this.resetForm();
-            // Add this toast notification
             this.toastService.showSuccess('Word Updated!', `"${updated.word}" has been successfully updated.`);
-            this.loadWords(); // ✅ Refresh the list from the server
+            this.loadWords();
             window.location.reload();
             this.loading = false;
           },
           error: err => {
             console.error('Error updating word:', err);
-            // Add error toast
             this.toastService.showError('Update Failed', 'Failed to update the word. Please try again.');
             this.loading = false;
           }
@@ -263,12 +336,11 @@ export class WordsComponent implements OnInit {
             const newWord = response?.data?.createWord;
             if (newWord) {
               this.words = [...this.words, newWord];
-              this.applyFilters();
+              this.applyFilters(); // This will also apply pagination
               this.toggleAddModal();
               this.resetForm();
-              // Add this toast notification
               this.toastService.showSuccess('Word Added!', `"${newWord.word}" has been successfully added to your collection.`);
-              this.loadWords(); // ✅ Refresh the list from the server
+              this.loadWords();
               window.location.reload();
             } else {
               console.error('No word returned from upload:', response);
@@ -276,7 +348,6 @@ export class WordsComponent implements OnInit {
           },
           error: err => {
             console.error('Error adding word via HttpClient:', err);
-            // Add error toast
             this.toastService.showError('Add Failed', 'Failed to add the word. Please try again.');
           }
         });
@@ -287,19 +358,17 @@ export class WordsComponent implements OnInit {
             const newWord = result.data?.createWord;
             if (newWord) {
               this.words = [...this.words, newWord];
-              this.applyFilters();
+              this.applyFilters(); // This will also apply pagination
               this.toggleAddModal();
               this.resetForm();
-              // Add this toast notification
               this.toastService.showSuccess('Word Added!', `"${newWord.word}" has been successfully added to your collection.`);
-              this.loadWords(); // ✅ Refresh the list from the server
+              this.loadWords();
             } else {
               console.error('No word returned from Apollo mutation:', result);
             }
           },
           error: err => {
             console.error('Error adding word via Apollo:', err);
-            // Add error toast
             this.toastService.showError('Add Failed', 'Failed to add the word. Please try again.');
           }
         });
@@ -307,14 +376,11 @@ export class WordsComponent implements OnInit {
     }
   }
 
-
-
-
   resetForm() {
     this.newWord = {
       word: '',
       level: '',
-      synonym: '',  // Add synonym reset
+      synonym: '',
       imageUrl: ''
     };
     this.selectedFile = null;
@@ -330,7 +396,7 @@ export class WordsComponent implements OnInit {
       this.wordService.deleteWord(id).subscribe({
         next: () => {
           this.toastService.showSuccess('Word Deleted!', 'The word has been successfully deleted.');
-          this.loadWords(); // ✅ Refresh the list from the server
+          this.loadWords();
           this.loading = false;
         },
         error: err => {
@@ -341,7 +407,6 @@ export class WordsComponent implements OnInit {
       });
     }
   }
-
 
   trackByWord(index: number, word: Word): string {
     return word.id;
@@ -355,8 +420,7 @@ export class WordsComponent implements OnInit {
     return this.words.filter(word => word.level === level).length;
   }
 
-
   getFilteredWordsByLevel(level: string): number {
-    return this.getFilteredWords().filter(word => word.level === level).length;
+    return this.filteredWords.filter(word => word.level === level).length;
   }
 }
