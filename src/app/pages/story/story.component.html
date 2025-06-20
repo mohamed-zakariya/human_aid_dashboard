@@ -297,10 +297,11 @@
           type="number" 
           class="page-input"
           [value]="currentPage"
-          (keyup.enter)="goToPage(+$event.target.value)"
+          (keyup.enter)="handlePageEnter($event)"
           [min]="1"
           [max]="totalPages"
-        >
+        />
+
         <span>of {{ totalPages }}</span>
       </div>
     </div>

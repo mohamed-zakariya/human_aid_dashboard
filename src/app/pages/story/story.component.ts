@@ -369,4 +369,11 @@ export class StoryComponent implements OnInit, OnDestroy {
       );
     }
   }
+
+  handlePageEnter(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const page = Number(input.value);
+    this.goToPage(page);
+  }
+
 }
