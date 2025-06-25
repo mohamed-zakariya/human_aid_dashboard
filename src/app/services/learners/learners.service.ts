@@ -3,7 +3,7 @@ import { Apollo, gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Learner } from '../../interfaces/learner-interface/learner';
-import { DELETE_USER, GET_ALL_USERS } from '../../graphql/learners-queries';
+import { DELETE_USER, GET_ALL_USERS, sendInactiviteEmail } from '../../graphql/learners-queries';
 
 
 @Injectable({
@@ -28,5 +28,18 @@ export class LearnersService {
     }).pipe(map(result => result.data?.deleteUser ?? false));
   }
 
-  
+  sendInactivityEmail(userId: string, parentId?: string): Observable<{ message: string; success: boolean }> {
+    return this.apollo.mutate<{
+      sendInactivityEmailToUser: { message: string; success: boolean }
+    }>({
+      mutation: sendInactiviteEmail,
+      variables: {
+        userId,
+        parentId: parentId ?? null
+      }
+    }).pipe(
+      map(result => result.data?.sendInactivityEmailToUser!)
+    );
+  }
+
 }

@@ -10,4 +10,5 @@ export interface Learner {
   lastActiveDate: string;
   age?: number;
   lastActive?: string;
+  parentId?: string | null; // ✅ important
 }

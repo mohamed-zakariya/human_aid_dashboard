@@ -675,3 +675,60 @@
 .learners-container.dark-mode .error-text p {
   color: #fca5a5;
 }
+
+
+
+/* Add these styles to your existing learners.component.css */
+
+.btn-email {
+  background-color: #10b981; /* Green color for email */
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.btn-email:hover:not(:disabled) {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-email:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-email:disabled:hover {
+  transform: none;
+}
+
+.btn-email svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Dark mode styles */
+.dark-mode .btn-email:disabled {
+  background-color: #4b5563;
+  color: #9ca3af;
+}
+
+/* Tooltip styles for better UX */
+.btn-email[title] {
+  position: relative;
+}
+
+/* Ensure proper spacing between action buttons */
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

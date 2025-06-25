@@ -12,6 +12,7 @@ export const GET_ALL_USERS = gql`
       birthdate
       nationality
       lastActiveDate
+      parentId
     }
   }
 `;
@@ -21,3 +22,13 @@ export const DELETE_USER = gql`
     deleteUser(userId: $userId)
   }
 `;
+
+
+export  const sendInactiviteEmail = gql`
+  mutation($userId: ID!, $parentId: ID) {
+    sendInactivityEmailToUser(userId: $userId, parentId: $parentId) {
+      message
+      success
+    }
+  }
+  `;

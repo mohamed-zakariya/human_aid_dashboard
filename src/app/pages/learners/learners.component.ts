@@ -61,9 +61,6 @@ export class LearnersComponent implements OnInit {
     this.loadLearners(); // Call the new method
   }
 
-
-
-
   processLearners() {
     this.learners = this.learners.map(learner => ({
       ...learner,
@@ -87,8 +84,6 @@ export class LearnersComponent implements OnInit {
     return Math.max(0, age);
   }
 
-
-
   // Add this method to calculate pagination
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredLearners.length / this.itemsPerPage);
@@ -97,13 +92,13 @@ export class LearnersComponent implements OnInit {
     this.paginatedLearners = this.filteredLearners.slice(startIndex, endIndex);
   }
 
-
-    loadLearners(): void {
+  loadLearners(): void {
     this.loading = true;
     this.error = '';
     
     this.learnersService.getAllUsers().subscribe({
       next: (learners: Learner[]) => {
+        console.log('Users:', learners); // ✅ Print all users
         this.learners = learners;
         this.processLearners();
         this.applyFilters();
@@ -116,7 +111,6 @@ export class LearnersComponent implements OnInit {
       }
     });
   }
-
 
   formatLastActive(timestamp: string): string {
     const date = new Date(parseInt(timestamp));
@@ -149,8 +143,53 @@ export class LearnersComponent implements OnInit {
     return diffDays > 30;
   }
 
-  applyFilters() {
+  // NEW METHOD: Check if user has been inactive for 2+ months
+  isEligibleForInactivityEmail(timestamp: string): boolean {
+    const date = new Date(parseInt(timestamp));
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // 2 weeks = 14 days
+    return diffDays >= 10;
+  }
 
+
+  // NEW METHOD: Send inactivity email
+  sendInactivityEmail(learner: Learner): void {
+    if (!this.isEligibleForInactivityEmail(learner.lastActiveDate)) {
+      this.toastService.showSuccess('Action Not Available', 'User must be inactive for at least 2 months to send inactivity email.');
+      return;
+    }
+
+    const confirmMessage = learner.role === 'child' 
+      ? `Send inactivity email for ${learner.name}? This will notify both the child and their parent.`
+      : `Send inactivity email to ${learner.name}?`;
+
+    if (confirm(confirmMessage)) {
+      this.loading = true;
+      
+      // For child users, we need parentId. For adult users, parentId can be undefined/null
+      const parentId = learner.role === 'child' ? learner.parentId : undefined;
+
+      this.learnersService.sendInactivityEmail(learner.id, parentId!).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.toastService.showSuccess('Email Sent!', response.message);
+          } else {
+            this.toastService.showSuccess('Email Failed', response.message);
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error sending inactivity email:', error);
+          this.toastService.showSuccess('Error', 'Failed to send inactivity email. Please try again.');
+          this.loading = false;
+        }
+      });
+    }
+  }
+
+  applyFilters() {
     this.filteredLearners = this.learners.filter(learner => {
       // Search filter
       if (this.filters.search && !learner.name.toLowerCase().includes(this.filters.search.toLowerCase())) {
@@ -296,7 +335,6 @@ export class LearnersComponent implements OnInit {
     }
   }
 
-
   generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
@@ -326,7 +364,4 @@ export class LearnersComponent implements OnInit {
       this.updatePagination();
     }
   }
-
-
-
 }
